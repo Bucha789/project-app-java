@@ -4,6 +4,8 @@
  */
 package ProyectoFinal.Api.Resources;
 
+import java.util.List;
+
 /**
  *
  * @author juanhernandez
@@ -12,7 +14,7 @@ public class User {
   private int id;
   private String username;
   private String password;
-  
+  private List<Task> tasks;
   public User() {}
 
   public User(int id, String username, String password) {
@@ -38,5 +40,9 @@ public class User {
   }
   public void setPassword(String password) {
     this.password = password;
+  }
+  
+  public List<Task> getTasks() {
+    return tasks;
   }
 }

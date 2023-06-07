@@ -4,16 +4,55 @@
  */
 package ProyectoFinal.Views;
 
+import ProyectoFinal.Api.ApiClient;
+import ProyectoFinal.Api.Resources.Task;
+import ProyectoFinal.Api.Resources.User;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.swing.table.DefaultTableModel;
+
+
 /**
  *
  * @author juanhernandez
  */
 public class Dashboard extends javax.swing.JFrame {
+    String idUser;
+    String userName;
+    User userInfo;
+    List<Task> tasks;
+    List<Task> completedTasks;
+    List<Task> tasksToDo;
+    DefaultTableModel model;
 
     /**
      * Creates new form Dashboard
      */
-    public Dashboard() {
+    
+    public Dashboard(String id, String userName) {
+        this.idUser = id;
+        this.userName = userName;
+        ApiClient api = new ApiClient();
+        User currentUser = api.existUser(userName);
+        if(currentUser != null) {
+            userInfo = currentUser;
+            this.tasks = userInfo.getTasks();
+            this.completedTasks = tasks.stream().filter(task -> task.isCompleted()).collect(Collectors.toList());
+            this.tasksToDo = tasks.stream().filter(task -> !task.isCompleted()).collect(Collectors.toList());
+            //fill table
+            this.model = new DefaultTableModel();
+            model.addColumn("Titulo");
+            model.addColumn("Descripción");
+            model.addColumn("Estatus");
+            
+            for (Task task : this.tasks) {
+                Object[] fila = new Object[3]; 
+                fila[0] = task.getTitle(); 
+                fila[1] = task.getDescription();
+                fila[2] = task.isCompleted() ? "Completado" : "Por hacer";
+                model.addRow(fila);
+            }
+        }
         initComponents();
     }
 
@@ -37,39 +76,14 @@ public class Dashboard extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dashboard To-Do Manager");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Titulo", "Descripción", "Status", "Completar"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, true
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        jTable1.setModel(this.model);
         jScrollPane1.setViewportView(jTable1);
 
-        jLabel1.setText("Usuario: Yo");
+        jLabel1.setText("Usuario: " + userInfo.getUsername());
 
-        jLabel2.setText("Tareas Completadas: 0");
+        jLabel2.setText("Tareas Completadas: " + completedTasks.size());
 
-        jLabel3.setText("Tareas Por Hacer: 0");
+        jLabel3.setText("Tareas Por Hacer: " + tasksToDo.size());
 
         jButton1.setText("Agregar Tarea");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -94,7 +108,7 @@ public class Dashboard extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
                         .addComponent(jButton1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(23, 23, 23))
             .addGroup(layout.createSequentialGroup()
@@ -155,11 +169,12 @@ public class Dashboard extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        String idUser = args[0];
+        String userName = args[1];
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Dashboard().setVisible(true);
+                new Dashboard(idUser, userName).setVisible(true);
             }
         });
     }
@@ -171,6 +186,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    public javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

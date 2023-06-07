@@ -170,8 +170,7 @@ public class Login extends javax.swing.JFrame {
         }
         User existingUser = api.existUser(username);
         if (existingUser != null && password.equals(existingUser.getPassword())) {
-            Dashboard dashboard = new Dashboard();
-            dashboard.setVisible(true);
+            Dashboard.main(new String[]{String.valueOf(existingUser.getId()), existingUser.getUsername()});
             this.dispose();
         } else {
             resultLabel.setForeground(new Color(191, 26, 47));

@@ -65,7 +65,6 @@ public class ApiClient {
         // Procesar la respuesta JSON
         if (response.getStatusLine().getStatusCode() == 200) {
             // Si la respuesta es exitosa, crea un objeto User a partir del JSON y devuélvelo
-            System.out.println(responseBody);
             User user = parseUserFromJson(responseBody);
             return user;
         } else {
