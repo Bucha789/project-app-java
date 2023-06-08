@@ -7,6 +7,7 @@ package ProyectoFinal.Views;
 import ProyectoFinal.Api.ApiClient;
 import ProyectoFinal.Api.Resources.Task;
 import ProyectoFinal.Api.Resources.User;
+import helpers.RowListener;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
@@ -40,17 +41,24 @@ public class Dashboard extends javax.swing.JFrame {
             this.completedTasks = tasks.stream().filter(task -> task.isCompleted()).collect(Collectors.toList());
             this.tasksToDo = tasks.stream().filter(task -> !task.isCompleted()).collect(Collectors.toList());
             //fill table
-            this.model = new DefaultTableModel();
+            this.model = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+            model.addColumn("Id");
             model.addColumn("Titulo");
             model.addColumn("Descripción");
             model.addColumn("Estatus");
             
             for (Task task : this.tasks) {
-                Object[] fila = new Object[3]; 
-                fila[0] = task.getTitle(); 
-                fila[1] = task.getDescription();
-                fila[2] = task.isCompleted() ? "Completado" : "Por hacer";
-                model.addRow(fila);
+                Object[] row = new Object[4]; 
+                row[0] = task.getId();
+                row[1] = task.getTitle(); 
+                row[2] = task.getDescription();
+                row[3] = task.isCompleted() ? "Completado" : "Por hacer";
+                model.addRow(row);
             }
         }
         initComponents();
@@ -67,16 +75,19 @@ public class Dashboard extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        RowListener selectionListener = new RowListener(jTable1);
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dashboard To-Do Manager");
 
         jTable1.setModel(this.model);
+        jTable1.getSelectionModel().addListSelectionListener(selectionListener);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel1.setText("Usuario: " + userInfo.getUsername());
@@ -95,10 +106,16 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
         jLabel4.setText("Dashboard");
 
+        jLabel5.setText("Si deseas editar una tarea puedes hacerlo dandole click! :)");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addGap(300, 300, 300))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,12 +126,10 @@ public class Dashboard extends javax.swing.JFrame {
                         .addGap(16, 16, 16)
                         .addComponent(jButton1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(23, 23, 23))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(285, 285, 285)
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,7 +148,9 @@ public class Dashboard extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton1)))
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         pack();
@@ -185,6 +202,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
