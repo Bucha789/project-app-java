@@ -13,7 +13,7 @@ public class Task {
     private String title;
     private String description;
     private boolean completed;
-    private User user;
+    private int userId;
 
   public Task() {}
 
@@ -49,10 +49,10 @@ public class Task {
   public void setCompleted(boolean completed) {
     this.completed = completed;
   }
-  public User getUser() {
-    return user;
+  public int getUserId() {
+    return this.userId;
   }
-  public void setUser(User user) {
-    this.user = user;
+  public void setUserId(int userId) {
+    this.userId = userId;
   }
 }

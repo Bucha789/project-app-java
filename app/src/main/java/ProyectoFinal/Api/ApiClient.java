@@ -113,7 +113,7 @@ public class ApiClient {
             if (response.getStatusLine().getStatusCode() == 200) {
                 return parseTaskFromJson(responseBody);
             } else {
-                System.out.println("Error al obtener el usuario");
+                System.out.println("Error al actualizar la tarea");
                 return null;
             }
             // Actualizar la interfaz de usuario de Swing según la respuesta obtenida
@@ -146,7 +146,50 @@ public class ApiClient {
             ex.printStackTrace();
             return 404;
         }
-    }   
+    }
+    
+    public Task createTask(String title, String description, boolean status, String userId) {
+                try {
+            URI uri = new URIBuilder(API_URL + "task")
+            .build();
+            Task updatedTask = new Task();
+            //create task
+            updatedTask.setTitle(title);
+            updatedTask.setUserId(Integer.parseInt(userId));
+            updatedTask.setCompleted(status);
+            updatedTask.setDescription(description);
+            
+            //generar JSON
+            Gson gson = new Gson();
+            String requestBodyJson = gson.toJson(updatedTask);
+            HttpPost postRequest = new HttpPost(uri);
+            postRequest.setHeader("Accept", "application/json");
+            
+            //parsearlo para mandarlo como body
+            StringEntity stringEntity = new StringEntity(requestBodyJson, ContentType.APPLICATION_JSON);
+            
+            postRequest.setEntity(stringEntity);
+            
+            HttpResponse response = httpClient.execute(postRequest);
+            String responseBody = EntityUtils.toString(response.getEntity());
+
+            // Procesar la respuesta JSON
+            System.out.println(responseBody);
+            if (response.getStatusLine().getStatusCode() == 201) {
+                return parseTaskFromJson(responseBody);
+            } else {
+                System.out.println("Error al obtener la tarea creada");
+                return null;
+            }
+            // Actualizar la interfaz de usuario de Swing según la respuesta obtenida
+            // ...
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+    
+    
     private User parseUserFromJson(String json) {
         Gson gson = new Gson();
         try {
