@@ -4,7 +4,11 @@
  */
 package ProyectoFinal.Views;
 
+import ProyectoFinal.Api.ApiClient;
+import ProyectoFinal.Api.Resources.Task;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 
 /**
@@ -13,6 +17,7 @@ import javax.swing.JTable;
  */
 public class EditTask extends javax.swing.JFrame {
     private static JTable table;
+    private static int selectedRow;
     String taskId;
     String taskTitle;
     String taskDescription;
@@ -21,7 +26,6 @@ public class EditTask extends javax.swing.JFrame {
      * Creates new form AddTask
      */
     public EditTask(String id, String title, String description, String status) {
-        System.out.println(status);
         this.taskId = id;
         this.taskTitle = title;
         this.taskDescription = description;
@@ -41,13 +45,13 @@ public class EditTask extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jTextField1 = new javax.swing.JTextField();
+        descriptionField = new javax.swing.JTextArea();
+        titleField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        removeButton = new javax.swing.JButton();
+        statusCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Editar To-Do Manager");
@@ -56,19 +60,24 @@ public class EditTask extends javax.swing.JFrame {
 
         jLabel2.setText("Descripción:");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setText(this.taskDescription);
-        jScrollPane1.setViewportView(jTextArea1);
+        descriptionField.setColumns(20);
+        descriptionField.setRows(5);
+        descriptionField.setText(this.taskDescription);
+        jScrollPane1.setViewportView(descriptionField);
 
-        jTextField1.setText(this.taskTitle);
+        titleField.setText(this.taskTitle);
 
         jLabel3.setFont(new java.awt.Font("Helvetica Neue", 1, 14)); // NOI18N
         jLabel3.setText("Editar Tarea");
 
         jButton1.setBackground(new java.awt.Color(0, 0, 255));
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Añadir");
+        jButton1.setText("Editar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         cancelButton.setText("Cancelar");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -77,15 +86,20 @@ public class EditTask extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setBackground(new java.awt.Color(255, 0, 0));
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Eliminar");
-
-        jCheckBox1.setSelected(this.taskStatus);
-        jCheckBox1.setText("Completado");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        removeButton.setBackground(new java.awt.Color(255, 0, 0));
+        removeButton.setForeground(new java.awt.Color(255, 255, 255));
+        removeButton.setText("Eliminar");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                removeButtonActionPerformed(evt);
+            }
+        });
+
+        statusCheckBox.setSelected(this.taskStatus);
+        statusCheckBox.setText("Completado");
+        statusCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                statusCheckBoxActionPerformed(evt);
             }
         });
 
@@ -102,7 +116,7 @@ public class EditTask extends javax.swing.JFrame {
                         .addGap(37, 37, 37)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton3)
+                                .addComponent(removeButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(cancelButton)
                                 .addGap(18, 18, 18)
@@ -113,10 +127,10 @@ public class EditTask extends javax.swing.JFrame {
                                     .addComponent(jLabel1))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jCheckBox1)
+                                    .addComponent(statusCheckBox)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
-                                        .addComponent(jTextField1)))))))
+                                        .addComponent(titleField)))))))
                 .addContainerGap(69, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -127,18 +141,18 @@ public class EditTask extends javax.swing.JFrame {
                 .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(titleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jCheckBox1)
+                .addComponent(statusCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(cancelButton)
-                    .addComponent(jButton3))
+                    .addComponent(removeButton))
                 .addGap(47, 47, 47))
         );
 
@@ -147,18 +161,80 @@ public class EditTask extends javax.swing.JFrame {
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
-        this.dispose();
         EditTask.enableTable();
         EditTask.setTable(null);
+        EditTask.setSelectedRow(0);
+        this.dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void statusCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusCheckBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }//GEN-LAST:event_statusCheckBoxActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String title = this.titleField.getText();
+        String description = this.descriptionField.getText();
+        boolean status = this.statusCheckBox.isSelected();
+        if (title.length() < 4 || description.length() < 4) return;
+        Task updatedTask = new ApiClient().updateTask(Integer.parseInt(this.taskId), title, description, status);
+        if (updatedTask != null) {
+            table.setValueAt(updatedTask.getTitle(), selectedRow, 1);
+            table.setValueAt(updatedTask.getDescription(), selectedRow, 2);
+            table.setValueAt(updatedTask.isCompleted() ? "Completado" : "Por hacer", selectedRow, 3);
+            EditTask.enableTable();
+            EditTask.setTable(null);
+            EditTask.setSelectedRow(0);
+            this.dispose();
+        };
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        // TODO add your handling code here:
+        int statusCode = new ApiClient().deleteTask(Integer.parseInt(this.taskId));
+        if (statusCode == 200) {
+            EditTask.enableTable();
+            TableModel model = table.getModel();
+            if (selectedRow >= 0) {
+            // Crear una nueva matriz de datos sin la fila seleccionada
+                DefaultTableModel newModel = new DefaultTableModel(){
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                    return false;
+                }};
+                
+                newModel.addColumn("Id");
+                newModel.addColumn("Titulo");
+                newModel.addColumn("Descripción");
+                newModel.addColumn("Estatus");
+                int rowCount = model.getRowCount();
+                
+                for(int index = 0; index < rowCount; index++) {
+                    if (index != selectedRow) {
+                        Object[] rowData = new Object[4];
+                        for (int col = 0; col < 4; col++) {
+                            rowData[col] = model.getValueAt(index, col);
+                        }
+                        newModel.addRow(rowData);
+                    }
+                }
+                
+                // Establecer el nuevo modelo de tabla en la tabla
+                table.setModel(newModel);
+                table.repaint();
+        }
+                System.out.println("hola");
+                //EditTask.setTable(null);
+                //EditTask.setSelectedRow(0);
+                this.dispose();
+        }
+    }//GEN-LAST:event_removeButtonActionPerformed
     public static void setTable(JTable currentTable) {
         table = currentTable;
     }
-    
+    public static void setSelectedRow(int row) {
+        selectedRow = row;
+    }
     public static void enableTable() {
         table.setEnabled(true);
     }
@@ -202,14 +278,14 @@ public class EditTask extends javax.swing.JFrame {
     }  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JTextArea descriptionField;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton removeButton;
+    private javax.swing.JCheckBox statusCheckBox;
+    private javax.swing.JTextField titleField;
     // End of variables declaration//GEN-END:variables
 }

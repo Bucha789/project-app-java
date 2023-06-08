@@ -15,15 +15,15 @@ import javax.swing.event.ListSelectionListener;
  */
 public class RowListener implements ListSelectionListener {
     private JTable table;
-    
     public RowListener(JTable table) {
-        this.table = table;
+        this.table = table;;
     }
     
     @Override
     public void valueChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting()) {
             int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) return;
             // Aquí puedes manejar la lógica cuando se selecciona una fila específica
             // Ejemplo: Obtener los valores de las celdas seleccionadas
             Object value1 = table.getValueAt(selectedRow, 0);
@@ -33,6 +33,7 @@ public class RowListener implements ListSelectionListener {
             
             // Ejemplo: Imprimir los valores en la consola
             EditTask.setTable(table);
+            EditTask.setSelectedRow(selectedRow);
             EditTask.main(new String[]{value1.toString(), value2.toString(), value3.toString(), value4.toString()});
             table.setEnabled(false);
             // Puedes realizar cualquier acción adicional según tus necesidades
