@@ -7,7 +7,7 @@ package ProyectoFinal.Views;
 import ProyectoFinal.Api.ApiClient;
 import ProyectoFinal.Api.Resources.Task;
 import ProyectoFinal.Api.Resources.User;
-import helpers.RowListener;
+import ProyectoFinal.helpers.RowListener;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.table.DefaultTableModel;
